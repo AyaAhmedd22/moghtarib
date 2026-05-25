@@ -7,6 +7,9 @@ import 'package:moghtarib/core/widgets/default_text_field.dart';
 import 'package:moghtarib/features/auth/cubit/register_cubit/register_cubit.dart';
 import 'package:moghtarib/features/auth/cubit/register_cubit/register_state.dart';
 
+import 'package:moghtarib/core/routes/app_routes.dart';
+
+
 
 
 
@@ -175,12 +178,28 @@ class RegisterView extends StatelessWidget {
                         decoration: _inputDecoration(hint: 'Enter WhatsApp number', icon: Icons.phone),
                       ),
                       const SizedBox(height: 24),
-                  
+
                       Text(
                         'By clicking the Register button, you agree to the public offer',
                         style: TextStyle(color: Colors.grey.shade600, fontSize: 12),
                       ),
-                      const SizedBox(height: 30),
+                      const SizedBox(height: 16),
+
+                      Center(
+                        child: TextButton(
+                          onPressed: () {
+                            Navigator.pushReplacementNamed(context, AppRoutes.login);
+                          },
+                          child: const Text(
+                            'Already have an account? Login',
+                            style: TextStyle(color: Colors.grey),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+
+
+
                   
                       SizedBox(
                         width: 317,

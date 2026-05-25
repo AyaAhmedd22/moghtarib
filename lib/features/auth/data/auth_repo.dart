@@ -73,8 +73,38 @@ import 'package:dartz/dartz.dart';
 
 class AuthRepo {
   
+  Future<String?> fetchUserRole() async {
+    // Reads access token from cache and calls UserRoles endpoint.
+    final token = CacheHelper.getValue(CacheKeys.accessToken) as String?;
+    if (token == null || token.isEmpty) return null;
+
+    final response = await ApiHelper.get(
+      endPoint: EndPoints.userRoles,
+      isProtected: true,
+    );
+
+    return response.fold(
+      (error) => null,
+      (map) {
+        // Backend can return either a string or a model.
+        final dynamic role = map['role'] ?? map['Role'] ?? map['userRole'] ?? map['UserRole'];
+        if (role == null) {
+          // Sometimes backend returns a list
+          final list = map['data'] ?? map['result'];
+          if (list is List && list.isNotEmpty) {
+            return list.first['role']?.toString();
+          }
+          return null;
+        }
+        return role.toString();
+      },
+    );
+  }
+
   // ==================== LOGIN FUNCTION ====================
+
   Future<Either<String, UserModel>> login({
+
     required String email, 
     required String password,
   }) async {

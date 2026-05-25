@@ -3,9 +3,13 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:moghtarib/core/cache/cache_helper.dart';
 import 'package:moghtarib/core/network/api_helper.dart';
 import 'package:moghtarib/features/auth/views/register_view.dart';
+import 'package:moghtarib/features/auth/views/login_view.dart';
 import 'package:moghtarib/features/screen/splash.dart';
+import 'package:moghtarib/features/screen/welcome.dart';
+import 'package:moghtarib/features/home/home_screens.dart';
+import 'package:moghtarib/core/routes/app_routes.dart';
 
-import 'login_page.dart';
+
 
 void main() async{
   WidgetsFlutterBinding.ensureInitialized();
@@ -26,11 +30,22 @@ class MyApp extends StatelessWidget {
       builder: (context, child) {
         return MaterialApp(
           title: 'Moghtarib',
+          debugShowCheckedModeBanner: false,
           theme: ThemeData(
             useMaterial3: true,
           ),
-          debugShowCheckedModeBanner: false,
-      home: SplashScreen(),
+          initialRoute: AppRoutes.splash,
+          routes: {
+            AppRoutes.splash: (context) => const SplashScreen(),
+            AppRoutes.welcome: (context) => const WelcomeScreen(),
+            AppRoutes.register: (context) => RegisterView(),
+            AppRoutes.login: (context) => const LoginView(),
+            AppRoutes.adminHome: (context) => const AdminHome(),
+            AppRoutes.studentHome: (context) => const StudentHome(),
+            AppRoutes.semsarHome: (context) => const SemsarHome(),
+            AppRoutes.sanaieeHome: (context) => const SanaieeHome(),
+          },
+
         );
       },
   );

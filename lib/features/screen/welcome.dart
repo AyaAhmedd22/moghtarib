@@ -5,7 +5,10 @@ import '../../core/utils/app_assets.dart';
 import '../../core/utils/app_colors.dart';
 
 import 'package:moghtarib/features/auth/views/register_view.dart';
+
+
 class WelcomeScreen extends StatelessWidget {
+
   const WelcomeScreen({super.key});
 
   @override
@@ -94,11 +97,7 @@ class WelcomeScreen extends StatelessWidget {
                         ),
                       ),
                       onPressed: () {
-                        // التنقل المباشر لصفحة الـ Register
-                        Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(builder: (context) => RegisterView()),
-                        );
+                        Navigator.pushReplacementNamed(context, '/register');
                       },
                       child: const Text(
                         "Let's Start",

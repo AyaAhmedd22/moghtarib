@@ -4,9 +4,12 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:moghtarib/features/auth/cubit/register_cubit/register_state.dart';
 import 'package:moghtarib/features/auth/data/auth_repo.dart';
 
+import 'package:moghtarib/core/utils/role_based_navigation.dart';
+
 
 // class RegisterCubit extends Cubit<RegisterStates> {
 //   RegisterCubit() : super(RegisterInitialState());
+
 
 //   static RegisterCubit get(context) => BlocProvider.of(context);
 
@@ -117,10 +120,18 @@ class RegisterCubit extends Cubit<RegisterStates> {
         print("DEBUG CUBIT REGISTER ERROR: $error");
         emit(RegisterErrorState(error));
       },
-      (userModel) {
+      (userModel) async {
         print("DEBUG CUBIT REGISTER SUCCESS: ${userModel.toString()}");
-        // 🔥 الحل هنا: نمرر الـ userModel المرتجع إلى الـ SuccessState
         emit(RegisterSuccessState(userModel));
+
+        // After register, fetch role and navigate to the correct home screen.
+        final role = await repo.fetchUserRole();
+        if (role == null) return;
+
+        await RoleBasedNavigation.navigateByRole(
+          role: role,
+          replace: true,
+        );
       },
     );
   }

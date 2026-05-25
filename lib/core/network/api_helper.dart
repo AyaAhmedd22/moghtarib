@@ -35,8 +35,14 @@ abstract class ApiHelper {
               final dioRefresh = Dio(BaseOptions(baseUrl: EndPoints.baseUrl));
               final refreshToken = CacheHelper.getValue(CacheKeys.refreshToken);
 
+              // If refresh endpoint isn't configured in your EndPoints, skip refresh flow.
+              if (EndPoints.refresh == null) {
+                return handler.next(error);
+              }
+
               final refreshResponse = await dioRefresh.post(
-                EndPoints.refresh,
+                EndPoints.refresh!,
+
                 options: Options(
                   headers: {
                     'Authorization': 'Bearer $refreshToken',
