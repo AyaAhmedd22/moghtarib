@@ -11,8 +11,10 @@ import '../cubit/login_cubit/login_state.dart';
 import '../../../core/widgets/custom_appbar.dart';
 import '../cubit/login_cubit/login_cubit.dart';
 import '../../../core/widgets/custom_btn.dart';
-
+import '../../home/home_screens.dart';
+import '../../home/presentation/views/base_home_screen.dart';
 import 'package:moghtarib/features/screen/welcome.dart';
+
 
 class LoginView extends StatelessWidget {
   const LoginView({super.key});
@@ -23,6 +25,29 @@ class LoginView extends StatelessWidget {
       create: (_) => LoginCubit(),
       child: BlocListener<LoginCubit, LoginState>(
         listener: (context, state) {
+          if (state is LoginSuccessState) {
+      // 👈 انقل المستخدم من هنا إجبارياً بالـ Navigator العادي بتاع فلاتر لتجربة التنقل
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (_) => BaseHomeScreen(
+            drawerTitle: 'Home',
+            body: Center(
+              child: Text(
+                'Home',
+                style: const TextStyle(color: Colors.white, fontSize: 22),
+              ),
+            ),
+          ),
+        ),
+      );
+    }
+    if (state is LoginErrorState) {
+      // عشان لو في أيرور مخفي يظهرلك في شاشة الموبايل
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(state.error)),
+      );
+    }
           // navigation happens inside cubit via callback routing in this implementation
         },
         child: BlocBuilder<LoginCubit, LoginState>(
@@ -96,6 +121,7 @@ class LoginView extends StatelessWidget {
                                     backgroundColor: AppColors.primary,
                                     shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(10),
+                                      
                                     ),
                                     elevation: 0,
                                   ),
@@ -141,4 +167,3 @@ class LoginView extends StatelessWidget {
     );
   }
 }
-

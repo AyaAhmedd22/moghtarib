@@ -11,6 +11,8 @@ import 'package:moghtarib/core/routes/app_routes.dart';
 
 
 
+
+
 void main() async{
   WidgetsFlutterBinding.ensureInitialized();
   await CacheHelper.init();
@@ -28,7 +30,8 @@ class MyApp extends StatelessWidget {
       minTextAdapt: true,
       splitScreenMode: true, // تفعيل هذا المتغير هو ما يقضي على الشاشة الحمراء تماماً
       builder: (context, child) {
-        return MaterialApp(
+     
+          return MaterialApp(
           title: 'Moghtarib',
           debugShowCheckedModeBanner: false,
           theme: ThemeData(

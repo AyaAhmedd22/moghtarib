@@ -10,9 +10,29 @@ import 'package:moghtarib/features/auth/cubit/register_cubit/register_state.dart
 import 'package:moghtarib/core/routes/app_routes.dart';
 
 
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
+// فرضاً أن هذا هو الـ Custom TextField اللي مستخدماه للـ National ID
+// لو ملوش ملف منفصل سيبيه زي ما هو
+class DefaultTextField extends StatelessWidget {
+  final TextEditingController controller;
+  final String hintText;
+  const DefaultTextField({super.key, required this.controller, required this.hintText});
 
-
+  @override
+  Widget build(BuildContext context) {
+    return TextFormField(
+      controller: controller,
+      decoration: InputDecoration(
+        hintText: hintText,
+        filled: true,
+        fillColor: Colors.grey.shade100,
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: BorderSide.none),
+      ),
+    );
+  }
+}
 
 class RegisterView extends StatelessWidget {
   RegisterView({super.key});
@@ -28,8 +48,6 @@ class RegisterView extends StatelessWidget {
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _confirmPasswordController = TextEditingController();
 
-  // 💡 تم حذف المتغيرات وقائمة الـ roles من هنا ونقلها للـ Cubit لضمان الـ State Management السليم
-
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
@@ -37,11 +55,40 @@ class RegisterView extends StatelessWidget {
       child: BlocConsumer<RegisterCubit, RegisterStates>(
         listener: (context, state) {
           if (state is RegisterSuccessState) {
+            // 1. إظهار رسالة النجاح
             ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('Account Created Successfully'), backgroundColor: Colors.green),
+              const SnackBar(
+                content: Text('Account Created Successfully'), 
+                backgroundColor: Colors.green,
+              ),
             );
-            // goTo(context, MainWrapper(), NavigatorType.pushReplacement);
+
+            // 2. التوجيه الآمن بناءً على الـ Role المختار من الـ Cubit ومسح الـ Stack
+            final cubit = RegisterCubit.get(context);
+            final normalizedRole = (cubit.selectedRole ?? '').toLowerCase();
+
+            String nextRoute;
+            switch (normalizedRole) {
+              case 'admin':
+                nextRoute = AppRoutes.adminHome;
+                break;
+              case 'student':
+                nextRoute = AppRoutes.studentHome;
+                break;
+              case 'semsar':
+                nextRoute = AppRoutes.semsarHome;
+                break;
+              case 'sanaiee':
+                nextRoute = AppRoutes.sanaieeHome;
+                break;
+              default:
+                nextRoute = AppRoutes.welcome;
+            }
+
+            // التوجيه الفوري ومسح شاشات الـ Register والـ Login السابقة تماماً
+            Navigator.pushNamedAndRemoveUntil(context, nextRoute, (route) => false);
           }
+          
           if (state is RegisterErrorState) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(content: Text(state.error), backgroundColor: Colors.red),
@@ -54,7 +101,6 @@ class RegisterView extends StatelessWidget {
           return Scaffold(
             backgroundColor: AppColors.scaffoldBackground,
             body: SafeArea(
-              // 💡 تم الإبقاء على SingleChildScrollView واحدة فقط لمنع الـ Layout Crash
               child: SingleChildScrollView(
                 padding: const EdgeInsets.symmetric(horizontal: 24.0),
                 child: Form(
@@ -65,7 +111,7 @@ class RegisterView extends StatelessWidget {
                       const SizedBox(height: 10),
                       const Text(
                         'Create an\naccount',
-                        style: TextStyle(fontSize: 36, fontWeight: FontWeight.w700, height: 1.3, color: AppColors.white),
+                        style: TextStyle(fontSize: 36, fontWeight: FontWeight.w700, height: 1.3, color: Colors.white),
                       ),
                       const SizedBox(height: 30),
                   
@@ -125,15 +171,20 @@ class RegisterView extends StatelessWidget {
                       ),
                       const SizedBox(height: 16),
                       
-                      DefaultTextField(
+                      // DefaultTextField(
+                      //   controller: _nationalIdController,
+                      //   hintText: 'Enter National ID',
+                        
+                      // ),
+                      TextFormField(
                         controller: _nationalIdController,
-                        hintText: 'Enter National ID',
+                        keyboardType: TextInputType.number,
+                        decoration: _inputDecoration(hint: 'Enter National ID', icon: Icons.badge),
                       ),
                       const SizedBox(height: 16),
                       
-                      // 💡 الـ DropdownButtonFormField المطور والمربوط بالـ Cubit مباشرة
                       DropdownButtonFormField<String>(
-                        value: cubit.selectedRole, // القيمة تأتي من الـ Cubit
+                        value: cubit.selectedRole,
                         hint: const Text('Select role', style: TextStyle(color: Colors.grey)),
                         decoration: InputDecoration(
                           filled: true,
@@ -144,7 +195,6 @@ class RegisterView extends StatelessWidget {
                           ),
                         ),
                         icon: const Icon(Icons.keyboard_arrow_down, color: Colors.grey),
-                        // قائمة الأدوار المحددة في الـ Cubit (بدون عنصر 'select role' لتجنب المشاكل)
                         items: ['Admin', 'Student', 'Sanaiee', 'Semsar'].map((String role) {
                           return DropdownMenuItem<String>(
                             value: role,
@@ -153,7 +203,7 @@ class RegisterView extends StatelessWidget {
                         }).toList(),
                         onChanged: (String? newValue) {
                           if (newValue != null) {
-                            cubit.changeSelectedRole(newValue); // دالة التغيير بداخل الـ Cubit
+                            cubit.changeSelectedRole(newValue);
                           }
                         },
                         validator: (value) {
@@ -197,29 +247,26 @@ class RegisterView extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(height: 16),
-
-
-
                   
                       SizedBox(
-                        width: 317,
+                        width: double.infinity, // تمديد العرض ليكون متناسقاً وملء المساحة المتاحة
                         height: 55,
                         child: state is RegisterLoadingState
                             ? const Center(child: CircularProgressIndicator(color: Color(0xFFF83758)))
                             : ElevatedButton(
                                 onPressed: () {
                                   if (_formKey.currentState!.validate()) {
-                                    cubit.userRegister(
-                                      username: _userNameController.text,
-                                      firstname: _firstNameController.text,
-                                      lastname: _lastNameController.text,
-                                      nationalid: _nationalIdController.text,
-                                      role: cubit.selectedRole ?? '', // القيمة تُرسل من الـ Cubit
-                                      phonenumber: _phoneController.text,
-                                      password: _passwordController.text,
-                                      email: _emailController.text,
-                                      whatsappnumber: _whatsappController.text,
-                                    );
+                                   cubit.userRegister(
+                            username: _userNameController.text,
+                            firstname: _firstNameController.text,
+                            lastname: _lastNameController.text,
+                            nationalid: _nationalIdController.text,
+                            role: cubit.selectedRole ?? '', 
+                            phonenumber: _phoneController.text,
+                            password: _passwordController.text,
+                            email: _emailController.text,
+                           whatsappnumber: _whatsappController.text,
+                              );
                                   }
                                 },
                                 style: ElevatedButton.styleFrom(
@@ -259,6 +306,252 @@ class RegisterView extends StatelessWidget {
     );
   }
 }
+
+// class RegisterView extends StatelessWidget {
+//   RegisterView({super.key});
+
+//   final _formKey = GlobalKey<FormState>();
+//   final TextEditingController _userNameController = TextEditingController();
+//   final TextEditingController _firstNameController = TextEditingController();
+//   final TextEditingController _lastNameController = TextEditingController();
+//   final TextEditingController _phoneController = TextEditingController();
+//   final TextEditingController _whatsappController = TextEditingController();
+//   final TextEditingController _nationalIdController = TextEditingController();
+//   final TextEditingController _emailController = TextEditingController();
+//   final TextEditingController _passwordController = TextEditingController();
+//   final TextEditingController _confirmPasswordController = TextEditingController();
+
+//   // 💡 تم حذف المتغيرات وقائمة الـ roles من هنا ونقلها للـ Cubit لضمان الـ State Management السليم
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return BlocProvider(
+//       create: (BuildContext context) => RegisterCubit(),
+//       child: BlocConsumer<RegisterCubit, RegisterStates>(
+//         listener: (context, state) {
+//           if (state is RegisterSuccessState) {
+//             ScaffoldMessenger.of(context).showSnackBar(
+//               const SnackBar(content: Text('Account Created Successfully'), backgroundColor: Colors.green),
+//             );
+//             // goTo(context, MainWrapper(), NavigatorType.pushReplacement);
+//           }
+//           if (state is RegisterErrorState) {
+//             ScaffoldMessenger.of(context).showSnackBar(
+//               SnackBar(content: Text(state.error), backgroundColor: Colors.red),
+//             );
+//           }
+//         },
+//         builder: (context, state) {
+//           var cubit = RegisterCubit.get(context);
+
+//           return Scaffold(
+//             backgroundColor: AppColors.scaffoldBackground,
+//             body: SafeArea(
+//               // 💡 تم الإبقاء على SingleChildScrollView واحدة فقط لمنع الـ Layout Crash
+//               child: SingleChildScrollView(
+//                 padding: const EdgeInsets.symmetric(horizontal: 24.0),
+//                 child: Form(
+//                   key: _formKey,
+//                   child: Column(
+//                     crossAxisAlignment: CrossAxisAlignment.start,
+//                     children: [
+//                       const SizedBox(height: 10),
+//                       const Text(
+//                         'Create an\naccount',
+//                         style: TextStyle(fontSize: 36, fontWeight: FontWeight.w700, height: 1.3, color: AppColors.white),
+//                       ),
+//                       const SizedBox(height: 30),
+                  
+//                       TextFormField(
+//                         controller: _userNameController,
+//                         keyboardType: TextInputType.name,
+//                         decoration: _inputDecoration(hint: 'Enter user name', icon: Icons.person),
+//                       ),
+//                       const SizedBox(height: 16),
+
+//                       TextFormField(
+//                         controller: _firstNameController,
+//                         keyboardType: TextInputType.name,
+//                         decoration: _inputDecoration(hint: 'Enter first Name', icon: Icons.person),
+//                       ),
+//                       const SizedBox(height: 16),
+
+//                       TextFormField(
+//                         controller: _lastNameController,
+//                         keyboardType: TextInputType.name,
+//                         decoration: _inputDecoration(hint: 'Enter last Name', icon: Icons.person),
+//                       ),
+//                       const SizedBox(height: 16),
+                  
+//                       TextFormField(
+//                         controller: _emailController,
+//                         keyboardType: TextInputType.emailAddress,
+//                         decoration: _inputDecoration(hint: 'Email', icon: Icons.email),
+//                       ),
+//                       const SizedBox(height: 16),
+                  
+//                       TextFormField(
+//                         controller: _passwordController,
+//                         obscureText: cubit.isPasswordHidden,
+//                         decoration: _inputDecoration(
+//                           hint: 'Password',
+//                           icon: Icons.lock,
+//                           suffix: IconButton(
+//                             icon: Icon(cubit.isPasswordHidden ? Icons.visibility_off : Icons.visibility, color: Colors.grey),
+//                             onPressed: () => cubit.changePasswordVisibility(),
+//                           ),
+//                         ),
+//                       ),
+//                       const SizedBox(height: 16),
+                  
+//                       TextFormField(
+//                         controller: _confirmPasswordController,
+//                         obscureText: cubit.isConfirmPasswordHidden,
+//                         decoration: _inputDecoration(
+//                           hint: 'Confirm Password',
+//                           icon: Icons.lock_outline,
+//                           suffix: IconButton(
+//                             icon: Icon(cubit.isConfirmPasswordHidden ? Icons.visibility_off : Icons.visibility, color: Colors.grey),
+//                             onPressed: () => cubit.changeConfirmPasswordVisibility(),
+//                           ),
+//                         ),
+//                       ),
+//                       const SizedBox(height: 16),
+                      
+//                       DefaultTextField(
+//                         controller: _nationalIdController,
+//                         hintText: 'Enter National ID',
+//                       ),
+//                       const SizedBox(height: 16),
+                      
+//                       // 💡 الـ DropdownButtonFormField المطور والمربوط بالـ Cubit مباشرة
+//                       DropdownButtonFormField<String>(
+//                         value: cubit.selectedRole, // القيمة تأتي من الـ Cubit
+//                         hint: const Text('Select role', style: TextStyle(color: Colors.grey)),
+//                         decoration: InputDecoration(
+//                           filled: true,
+//                           fillColor: Colors.grey.shade100,
+//                           border: OutlineInputBorder(
+//                             borderRadius: BorderRadius.circular(10),
+//                             borderSide: BorderSide.none,
+//                           ),
+//                         ),
+//                         icon: const Icon(Icons.keyboard_arrow_down, color: Colors.grey),
+//                         // قائمة الأدوار المحددة في الـ Cubit (بدون عنصر 'select role' لتجنب المشاكل)
+//                         items: ['Admin', 'Student', 'Sanaiee', 'Semsar'].map((String role) {
+//                           return DropdownMenuItem<String>(
+//                             value: role,
+//                             child: Text(role, style: const TextStyle(color: Colors.black)),
+//                           );
+//                         }).toList(),
+//                         onChanged: (String? newValue) {
+//                           if (newValue != null) {
+//                             cubit.changeSelectedRole(newValue); // دالة التغيير بداخل الـ Cubit
+//                           }
+//                         },
+//                         validator: (value) {
+//                           if (value == null || value.isEmpty) {
+//                             return 'Role is required';
+//                           }
+//                           return null;
+//                         },
+//                       ),
+//                       const SizedBox(height: 16),
+                      
+//                       TextFormField(
+//                         controller: _phoneController,
+//                         keyboardType: TextInputType.phone,
+//                         decoration: _inputDecoration(hint: 'Enter Phone number', icon: Icons.phone),
+//                       ),
+//                       const SizedBox(height: 16),
+                      
+//                       TextFormField(
+//                         controller: _whatsappController,
+//                         keyboardType: TextInputType.phone,
+//                         decoration: _inputDecoration(hint: 'Enter WhatsApp number', icon: Icons.phone),
+//                       ),
+//                       const SizedBox(height: 24),
+
+//                       Text(
+//                         'By clicking the Register button, you agree to the public offer',
+//                         style: TextStyle(color: Colors.grey.shade600, fontSize: 12),
+//                       ),
+//                       const SizedBox(height: 16),
+
+//                       Center(
+//                         child: TextButton(
+//                           onPressed: () {
+//                             Navigator.pushReplacementNamed(context, AppRoutes.login);
+//                           },
+//                           child: const Text(
+//                             'Already have an account? Login',
+//                             style: TextStyle(color: Colors.grey),
+//                           ),
+//                         ),
+//                       ),
+//                       const SizedBox(height: 16),
+
+
+
+                  
+//                       SizedBox(
+//                         width: 317,
+//                         height: 55,
+//                         child: state is RegisterLoadingState
+//                             ? const Center(child: CircularProgressIndicator(color: Color(0xFFF83758)))
+//                             : ElevatedButton(
+//                                 onPressed: () {
+//                                   if (_formKey.currentState!.validate()) {
+//                                     cubit.userRegister(
+//                                       username: _userNameController.text,
+//                                       firstname: _firstNameController.text,
+//                                       lastname: _lastNameController.text,
+//                                       nationalid: _nationalIdController.text,
+//                                       role: cubit.selectedRole ?? '', // القيمة تُرسل من الـ Cubit
+//                                       phonenumber: _phoneController.text,
+//                                       password: _passwordController.text,
+//                                       email: _emailController.text,
+//                                       whatsappnumber: _whatsappController.text,
+//                                     );
+//                                   }
+//                                 },
+//                                 style: ElevatedButton.styleFrom(
+//                                   backgroundColor: AppColors.primary,
+//                                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+//                                   elevation: 0,
+//                                 ),
+//                                 child: const Text(
+//                                   'Create Account',
+//                                   style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600, color: Colors.white),
+//                                 ),
+//                               ),
+//                       ),
+//                       const SizedBox(height: 20),
+//                     ],
+//                   ),
+//                 ),
+//               ),
+//             ),
+//           );
+//         },
+//       ),
+//     );
+//   }
+
+//   InputDecoration _inputDecoration({required String hint, required IconData icon, Widget? suffix}) {
+//     return InputDecoration(
+//       hintText: hint,
+//       prefixIcon: Icon(icon, color: Colors.grey),
+//       suffixIcon: suffix,
+//       filled: true,
+//       fillColor: Colors.grey.shade100,
+//       border: OutlineInputBorder(
+//         borderRadius: BorderRadius.circular(10),
+//         borderSide: BorderSide.none,
+//       ),
+//     );
+//   }
+// }
 // class RegisterView extends StatelessWidget {
 //     RegisterView({super.key});
 

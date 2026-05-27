@@ -23,9 +23,10 @@ class WelcomeScreen extends StatelessWidget {
             left: 0,
             right: 0,
             child: SizedBox(
-              height:814.h,
+              height:514.h,
+              //814 514
               child: Image.asset(
-                AppAssets.building,
+                'assets/images/Container.png',
                 fit: BoxFit.cover,
                 alignment: Alignment.topCenter,
               ),
@@ -37,78 +38,80 @@ class WelcomeScreen extends StatelessWidget {
             bottom: 0,
             left: 0,
             right: 0,
-            child: Container(
-              height: 400.h,
-              decoration: BoxDecoration(
-                color: AppColors.scaffoldBackground,
-                borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(32).r,
-                  topRight: Radius.circular(32).r,
-                ),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.05),
-                    blurRadius: 10,
-                    offset: const Offset(0, -5),
+            child: SingleChildScrollView(
+              child: Container(
+                height: 350.h,
+                decoration: BoxDecoration(
+                  color: AppColors.scaffoldBackground,
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(32).r,
+                    topRight: Radius.circular(32).r,
                   ),
-                ],
-              ),
-              child: Padding(
-                padding: EdgeInsets.symmetric(vertical: 40.h, horizontal: 32.w),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    // العنوان الرئيسي باللون الداكن ليظهر بوضوح
-                    Text(
-                      'Mo8tareb — Your Home\nAway From Home',
-                      style: TextStyle(
-                        fontWeight: FontWeight.w700,
-                        fontSize: 28.sp,
-                        height: 1.3,
-                        color: Colors.white,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                    SizedBox(height: 16.h),
-                    
-                    // النص التوضيحي الفرعي
-                    Text(
-                      'Your journey to the perfect student home starts here. Explore verified listings near your university..',
-                      style: TextStyle(
-                        fontWeight: FontWeight.w400,
-                        fontSize: 14.sp,
-                        height: 1.5,
-                        color: Colors.grey.shade600,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                    
-                    const Spacer(), // لدفع الزر إلى الأسفل بشكل متناسق تلقائياً
-                    
-                    // 🔥 3️⃣ الـ ElevatedButton الأصيل المصمم من الصفر بداخل الملف
-                    ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColors.primary, // اللون الأساسي للتطبيق
-                        foregroundColor: Colors.white,      // لون تأثير الضغط (Splash) ونص الزر الافتراضي
-                        elevation: 0,                       // إلغاء الظل ليكون مسطحاً ومودرن
-                        padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 14), // مساحة داخلية على حجم الكلمة بالضبط
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10), // الـ Radius المطلوب (10) ليطابق بقية الحقول
-                        ),
-                      ),
-                      onPressed: () {
-                        Navigator.pushReplacementNamed(context, '/register');
-                      },
-                      child: const Text(
-                        "Let's Start",
-                        style: TextStyle(
-                          color: Colors.white, // النص أبيض وثابت
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.05),
+                      blurRadius: 10,
+                      offset: const Offset(0, -5),
                     ),
                   ],
+                ),
+                child: Padding(
+                  padding: EdgeInsets.symmetric(vertical: 37.h, horizontal: 32.w),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      // العنوان الرئيسي باللون الداكن ليظهر بوضوح
+                      Text(
+                        'Mo8tareb — Your Home Away From Home',
+                        style: TextStyle(
+                          fontWeight: FontWeight.w700,
+                          fontSize: 25.sp,
+                          height: 1.3,
+                          color: Colors.white,
+                        ),
+                        textAlign: TextAlign.left,
+                      ),
+                      SizedBox(height: 16.h),
+                      
+                      // النص التوضيحي الفرعي
+                      Text(
+                        'Your journey to the perfect student home starts here. Explore verified listings near your university..',
+                        style: TextStyle(
+                          fontWeight: FontWeight.w400,
+                          fontSize: 14.sp,
+                          height: 1.5,
+                          color: Colors.grey.shade600,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                      
+                      const Spacer(), // لدفع الزر إلى الأسفل بشكل متناسق تلقائياً
+                      
+                      // 🔥 3️⃣ الـ ElevatedButton الأصيل المصمم من الصفر بداخل الملف
+                      ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppColors.primary, // اللون الأساسي للتطبيق
+                          foregroundColor: Colors.white,      // لون تأثير الضغط (Splash) ونص الزر الافتراضي
+                          elevation: 0,                       // إلغاء الظل ليكون مسطحاً ومودرن
+                          padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 14), // مساحة داخلية على حجم الكلمة بالضبط
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10), // الـ Radius المطلوب (10) ليطابق بقية الحقول
+                          ),
+                        ),
+                        onPressed: () {
+                          Navigator.pushReplacementNamed(context, '/login');
+                        },
+                        child: const Text(
+                          "Let's Start",
+                          style: TextStyle(
+                            color: Colors.white, // النص أبيض وثابت
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),

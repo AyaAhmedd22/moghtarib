@@ -18,7 +18,6 @@ import '../../../../core/utils/jwt_role_parser.dart';
 
 
 
-
 class LoginCubit extends Cubit<LoginState> {
   LoginCubit() : super(LoginInitialState());
 
@@ -90,21 +89,30 @@ class LoginCubit extends Cubit<LoginState> {
         emit(LoginErrorState(error));
       },
       (userModel) async {
+        // 1. حفظ التوكن في الكاش بالخلفية
+        await CacheHelper.setValue(
+          key: CacheKeys.accessToken, 
+          value: userModel.accessToken, 
+        );
+        
         emit(LoginSuccessState(userModel));
 
-        // Extract role from stored JWT token (no extra API calls).
-        final token = CacheHelper.getValue(CacheKeys.accessToken) as String?;
+        // 2. استخدام التوكن مباشرة من الـ userModel لضمان عدم حدوث نل (Null)
+        final token = userModel.accessToken; 
+
         if (token == null || token.isEmpty) {
           emit(LoginErrorState('Missing token after login'));
           return;
         }
 
+        // 3. استخراج الـ Role من التوكن مباشرة
         final role = JwtRoleParser.extractRole(token);
         if (role == null) {
           emit(LoginErrorState('Invalid token: role not found'));
           return;
         }
 
+        // 4. التوجيه المبني على الـ Role (واللي هيشتغل بعد تعديل 'student' لحروف سمول)
         await RoleBasedNavigation.navigateByRole(
           role: role,
           replace: true,
@@ -113,4 +121,3 @@ class LoginCubit extends Cubit<LoginState> {
     );
   }
 }
-
