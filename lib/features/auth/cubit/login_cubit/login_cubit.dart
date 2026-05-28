@@ -89,35 +89,65 @@ class LoginCubit extends Cubit<LoginState> {
         emit(LoginErrorState(error));
       },
       (userModel) async {
-        // 1. حفظ التوكن في الكاش بالخلفية
-        await CacheHelper.setValue(
-          key: CacheKeys.accessToken, 
-          value: userModel.accessToken, 
-        );
-        
-        emit(LoginSuccessState(userModel));
-
-        // 2. استخدام التوكن مباشرة من الـ userModel لضمان عدم حدوث نل (Null)
         final token = userModel.accessToken; 
 
         if (token == null || token.isEmpty) {
           emit(LoginErrorState('Missing token after login'));
           return;
         }
+        // 1. حفظ التوكن في الكاش بالخلفية
+        await CacheHelper.setValue(
+          key: CacheKeys.accessToken, 
+          // value: userModel.accessToken, 
+          value: token,
+        );
 
-        // 3. استخراج الـ Role من التوكن مباشرة
+        // 2. استخراج الـ Role من التوكن مباشرة
         final role = JwtRoleParser.extractRole(token);
-        if (role == null) {
+        
+        if (role == null || role.isEmpty) {
           emit(LoginErrorState('Invalid token: role not found'));
           return;
         }
 
-        // 4. التوجيه المبني على الـ Role (واللي هيشتغل بعد تعديل 'student' لحروف سمول)
-        await RoleBasedNavigation.navigateByRole(
-          role: role,
-          replace: true,
+        final normalizedRole = role.trim().toLowerCase();
+
+        // 3. حفظ الـ Role المستخرج في الكاش ليتعرف عليه الـ Splash لاحقاً
+        await CacheHelper.setValue(
+          key: CacheKeys.userRole, 
+          value: normalizedRole,
         );
+
+        // 4. إرسال حالة النجاح للـ UI مرة واحدة فقط
+        emit(LoginSuccessState(userModel));
       },
     );
+        // /////////////////comment///////////
+        // emit(LoginSuccessState(userModel));
+
+        // // 2. استخدام التوكن مباشرة من الـ userModel لضمان عدم حدوث نل (Null)
+        // final token = userModel.accessToken; 
+
+        // if (token == null || token.isEmpty) {
+        //   emit(LoginErrorState('Missing token after login'));
+        //   return;
+        // }
+
+        // // 3. استخراج الـ Role من التوكن مباشرة
+        // final role = JwtRoleParser.extractRole(token);
+        // if (role == null) {
+        //   emit(LoginErrorState('Invalid token: role not found'));
+        //   return;
+        // }
+
+        // // 4. التوجيه المبني على الـ Role (واللي هيشتغل بعد تعديل 'student' لحروف سمول)
+        // // await RoleBasedNavigation.navigateByRole(
+        // //   role: role,
+        // //   replace: true,
+        // // );
+        // ///////////////end////////////////
+    //     emit(LoginSuccessState(userModel));
+    //   },
+    // );
   }
 }

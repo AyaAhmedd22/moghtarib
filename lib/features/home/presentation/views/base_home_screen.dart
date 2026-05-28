@@ -205,4 +205,3 @@ class _EmptyProfileScreen extends StatelessWidget {
     );
   }
 }
-
