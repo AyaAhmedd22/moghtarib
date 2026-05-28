@@ -52,8 +52,10 @@ dependencies:
   carousel_slider: 
   connectivity_plus: 
   flutter_screenutil: 
+  url_launcher:
 
   jwt_decoder: 
+  equatable: ^2.0.8
 
 
 dev_dependencies:
