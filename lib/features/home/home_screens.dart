@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'package:flutter/material.dart';
+import 'package:moghtarib/features/home/student/view/student_home_view.dart';
 
 import '../../core/utils/app_assets.dart';
 import '../../core/utils/app_colors.dart';
@@ -24,10 +25,11 @@ class StudentHome extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const BaseHomeScreen(
-      drawerTitle: 'Student',
-      body: _PlaceholderBody(title: 'Student Home'),
-    );
+    // return const BaseHomeScreen(
+    //   drawerTitle: 'Student',
+    //   body: _PlaceholderBody(title: 'Student Home'),
+    // );
+    return const StudentHomeView();
   }
 }
 

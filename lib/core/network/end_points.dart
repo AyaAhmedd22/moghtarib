@@ -13,6 +13,13 @@ abstract class EndPoints{
 
   static const String getAllSanaieeia = '/api/Account/GetAllSanaieeia';
   static const String getAllReports = '/api/Report/GetAllReports';
+// ============ Home (Student) ============
+//  static  const String getuserapartment = '/api/Apartment/GetApartmentForSignInUser';
+  static const String searchapartment = '/api/Apartment/Search';
+  static const String getapartment = '/api/Apartment';
+  static const String favourite = '/api/Favourite';
+  // static const String postfavourite = '/api/Apartment';
+  // static const String deletefavourite = '/api/Apartment';
 
   // Token refresh endpoint (kept for ApiHelper refresh flow).
   // If your backend uses a different path, update this.
