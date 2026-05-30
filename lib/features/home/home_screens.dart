@@ -2,12 +2,12 @@ import 'package:flutter/material.dart';
 
 import 'package:flutter/material.dart';
 import 'package:moghtarib/features/home/student/view/student_home_view.dart';
-
+import '../home/semsar/view/semar_home_view.dart';
 import '../../core/utils/app_assets.dart';
 import '../../core/utils/app_colors.dart';
 import 'presentation/views/base_home_screen.dart';
 import 'admin/view/admin_home_view.dart';
-
+import '../home/semsar/view/add_apartment_tab_view.dart';
 import '../../core/utils/app_assets.dart';
 import '../../core/utils/app_colors.dart';
 
@@ -38,10 +38,11 @@ class SemsarHome extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const BaseHomeScreen(
-      drawerTitle: 'Semsar',
-      body: _PlaceholderBody(title: 'Semsar Home'),
-    );
+    // return const BaseHomeScreen(
+    //   drawerTitle: 'Semsar',
+    //   body: _PlaceholderBody(title: 'Semsar Home'),
+    // );
+     return const SemsarHomeView();
   }
 }
 

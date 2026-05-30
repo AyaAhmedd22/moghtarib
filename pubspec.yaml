@@ -44,7 +44,7 @@ dependencies:
   flutter_bloc: 
   flutter_svg: 
   get: 
-  image_picker: 
+  image_picker: ^1.2.2 
   intl: 
   introduction_screen: 
   meta: 
@@ -70,6 +70,7 @@ dev_dependencies:
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
   flutter_lints: ^6.0.0
+  flutter_launcher_icons:
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -85,6 +86,15 @@ flutter:
   assets:
     - assets/images/Logo.png
     - assets/images/Container.png
+    - assets/images/Logo.png
+    - assets/images/gamal.jpeg
+    - assets/images/ola.jpeg
+    - assets/images/abdo.jpeg
+    - assets/images/samy.jpeg
+    - assets/images/aya.jpeg
+    - assets/images/esraa.jpeg
+  
+    - assets/images/miconnn.png
     - assets/fonts/
 
   # To add assets to your application, add an assets section, like this:
@@ -117,3 +127,14 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/to/font-from-package
+
+flutter_launcher_icons:
+  android: "launcher_icon"
+  ios: true
+  
+  # الأيقونة الاحتياطية للموبايلات القديمة جداً وللـ iOS
+  image_path: "assets/images/miconnn.png" 
+
+  # الإعدادات السحرية للـ Responsive والـ Adaptive (لأندرويد 8 فما فوق) ✨
+  adaptive_icon_background: "#1E1E1E" # حط هنا لون خلفية التطبيق الداكنة (Hex Color)
+  adaptive_icon_foreground: "assets/images/miconnn.png" # اللوجو الأساسي بتاعك

@@ -1,9 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:moghtarib/features/home/presentation/profile/profile_cubit/profile_cubit.dart';
+import 'package:moghtarib/features/home/presentation/profile/repo/profile_repo.dart';
+import 'package:moghtarib/features/home/presentation/profile/view/profile_view.dart';
 import '../../../../core/cache/cache_helper.dart';
 import '../../../../core/cache/cache_keys.dart';
 import '../../../../core/utils/app_assets.dart';
 import '../../../../core/utils/app_colors.dart';
 import '../../../../core/routes/app_routes.dart';
+import '../about/about_screen.dart';
 class BaseHomeScreen extends StatelessWidget {
   final String drawerTitle;
   final VoidCallback? onLogout;
@@ -26,8 +31,8 @@ class BaseHomeScreen extends StatelessWidget {
         centerTitle: true,
         title: Image.asset(
           AppAssets.logo,
-          width: 38,
-          height: 31,
+          width: 88,
+          height: 81,
           fit: BoxFit.scaleDown,
         ),
         iconTheme: const IconThemeData(color: Colors.white),
@@ -43,8 +48,8 @@ class BaseHomeScreen extends StatelessWidget {
                 child: Center(
                   child: Image.asset(
                     AppAssets.logo,
-                    width: 72,
-                    height: 72,
+                    width: 92,
+                    height: 92,
                   ),
                 ),
               ),
@@ -68,7 +73,7 @@ class BaseHomeScreen extends StatelessWidget {
                   Navigator.of(context).pop();
                   Navigator.of(context).push(
                     MaterialPageRoute(
-                      builder: (_) => const _AboutScreen(),
+                      builder: (_) => AboutScreen(),
                     ),
                   );
                 },
@@ -100,9 +105,11 @@ class BaseHomeScreen extends StatelessWidget {
                   // Placeholder: change password feature.
                   Navigator.of(context).push(
                     MaterialPageRoute(
-                      builder: (_) => const _EmptyProfileScreen(),
-                    ),
-                  );
+                      builder: (_) => BlocProvider(
+                  create: (context) => UserCubit(UserRepo()), // تأكد من باصي الـ apiHelper لو الـ Constructor مستنيه
+                 child: const ProfileScreen(),
+                  ),)
+                   );
                 },
               ),
               const Divider(color: Colors.white24),
