@@ -2,10 +2,11 @@ import 'package:dartz/dartz.dart';
 
 import '../../../../core/network/api_helper.dart';
 import '../../../../core/network/end_points.dart';
+import '../../../../core/cache/cache_helper.dart';
 import '../model/user_model.dart';
 import'package:moghtarib/features/home/admin/model/sanaiee_model.dart';
 import 'package:url_launcher/url_launcher.dart';
-
+import '../model/report_model.dart';
 class AdminRepo {
   
   // 1️⃣ دالة جلب جميع المستخدمين (شغالة وسليمة تماماً)
@@ -114,6 +115,58 @@ class AdminRepo {
 
   // 2️⃣ دالة حذف المستخدم (تم تقفيلها وحل مشكلة الـ Syntax والـ Return)
   
+// Future<Either<String, List<ReportModel>>> getAllReports() async {
+//   // جلب الـ ID بالطريقة الصحيحة للدالة الخاصة بك
+//   final String adminId = CacheHelper.getValue('userId')?.toString() ?? "0";
 
-  // TODO: sanaiee + reports repo methods will be added later
+//   final result = await ApiHelper.get(
+//     endPoint: EndPoints.getAllReports, 
+//     isProtected: true,
+//     queryParameters: {
+//       'userId': adminId, 
+//     },
+//   );
+
+//   return result.map((responseBody) {
+//     if (responseBody is List) {
+//       return responseBody.map((e) => ReportModel.fromJson(e as Map<String, dynamic>)).toList();
+//     }
+Future<Either<String, List<ReportModel>>> getAllReports() async {
+  
+  // 1. جلب الـ ID الذي حفظناه أثناء الـ Login
+ // في ملف admin_repo.dart
+// استبدلي السطر 136 بهذا السطر:
+final String adminId = CacheHelper.getValue('userId')?.toString() ?? "";
+
+  // 2. إرسال الطلب مع الـ userId
+  final result = await ApiHelper.get(
+    endPoint: EndPoints.getAllReports,
+    isProtected: true,
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json',
+    },
+    // إرسال الـ userId الذي يطلبه السيرفر
+    queryParameters: {
+      'userId': adminId ?? "", 
+    },
+  );
+
+  return result.map((responseBody) {
+    // معالجة البيانات كما كانت
+    if (responseBody is List) {
+      return responseBody.map((e) => ReportModel.fromJson(e as Map<String, dynamic>)).toList();
+    }
+    
+    // في حال كانت البيانات مغلفة داخل مفتاح (مثل "data" أو "result")
+    if (responseBody is Map<String, dynamic>) {
+       final dynamic data = responseBody['data'] ?? responseBody['result'] ?? responseBody;
+       if (data is List) {
+         return data.map((e) => ReportModel.fromJson(e as Map<String, dynamic>)).toList();
+       }
+    }
+    
+    return <ReportModel>[];
+  });
+}
 }

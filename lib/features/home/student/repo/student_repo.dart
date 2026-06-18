@@ -11,7 +11,7 @@ class StudentRepo {
     final hasSearch = searchText != null && searchText.trim().isNotEmpty;
 
     final result = await ApiHelper.get(
-      endPoint: hasSearch ? EndPoints.searchapartment : EndPoints.getapartment,
+      endPoint: hasSearch ? EndPoints.searchapartment : EndPoints.getApartment,
       isProtected: false,
       queryParameters: hasSearch ? {'query': searchText.trim()} : null,
     );

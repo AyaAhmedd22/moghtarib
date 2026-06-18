@@ -8,15 +8,19 @@ abstract class EndPoints{
 
   // ============ Home (Admin) ============
   static const String getAllUsers = '/api/Account/GetAllUsers';
+  
+ 
   static const String deleteUser = '/api/Account/DeleteUser';
   static const String searchByName = '/api/Account/SearchByName';
 
   static const String getAllSanaieeia = '/api/Account/GetAllSanaieeia';
-  static const String getAllReports = '/api/Report/GetAllReports';
+  // static const String getAllReports = '/api/Report/GetAllReports';
+  static const String getAllReports = '/api/Report';
 // ============ Home (Student) ============
 //  static  const String getuserapartment = '/api/Apartment/GetApartmentForSignInUser';
   static const String searchapartment = '/api/Apartment/Search';
-  static const String getapartment = '/api/Apartment';
+  static const String getApartment='/api/Apartment';
+  static const String postApartment = '/api/Apartment';
   // static const String postapartment = '/api/Apartment';
   static const String favourite = '/api/Favourite';
   // static const String postfavourite = '/api/Apartment';

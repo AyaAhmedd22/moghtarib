@@ -127,7 +127,11 @@ class AuthRepo {
         if (map[CacheKeys.refreshToken] != null) {
           await CacheHelper.setValue(key: CacheKeys.refreshToken, value: map[CacheKeys.refreshToken]);
         }
-
+/////////id
+       final userData = map['user'] ?? map;
+      if (userData['id'] != null) {
+    await CacheHelper.setValue(key: 'userId', value: userData['id'].toString());
+   }
         // إرجاع الموديل
         return right(UserModel.fromJson(map['user'] ?? map)); 
       },
@@ -189,6 +193,9 @@ class AuthRepo {
         // نقوم بعمل Parse للبيانات المرجعة كـ UserModel
         // إذا كان السيرفر يرسل بيانات المستخدم بداخل كائن 'user' نأخذه، وإذا كان يرسلها في الـ Map المباشر نمرر الـ map نفسه
         final userData = map['user'] != null ? map['user'] : map;
+        if (userData['id'] != null) {
+      await CacheHelper.setValue(key: 'userId', value: userData['id'].toString());
+     }
         return right(UserModel.fromJson(userData));
       },
     );

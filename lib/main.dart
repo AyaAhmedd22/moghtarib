@@ -1,34 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:moghtarib/core/cache/cache_helper.dart';
-import 'package:moghtarib/core/network/api_helper.dart';
 import 'package:moghtarib/features/auth/views/register_view.dart';
 import 'package:moghtarib/features/auth/views/login_view.dart';
 import 'package:moghtarib/features/screen/splash.dart';
 import 'package:moghtarib/features/screen/welcome.dart';
 import 'package:moghtarib/features/home/home_screens.dart';
 import 'package:moghtarib/core/routes/app_routes.dart';
-
-
-
-import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
-
-// ⚠️ تأكدي من تعديل المسارات دي لتطابق مجلدات مشروعك بالظبط
- // مسار الكاش هيلبر بتاعك
-import 'core/routes/app_routes.dart'; // مسار ملف الـ Routes بتاعك
 import 'features/home/presentation/setting/cubit/mode/mode_cubit.dart';
-import 'features/auth/views/register_view.dart';
-import 'features/auth/views/login_view.dart';
-
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await CacheHelper.init();
-  
+
   runApp(const MyApp());
 }
-
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
@@ -39,7 +25,6 @@ class MyApp extends StatelessWidget {
       minTextAdapt: true,
       splitScreenMode: true,
       builder: (context, child) {
-        // 1. لف التطبيق بالـ BlocProvider لتوفير الـ ThemeCubit
         return BlocProvider(
           create: (context) => ThemeCubit(),
           child: BlocBuilder<ThemeCubit, ThemeMode>(

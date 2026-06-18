@@ -1,17 +1,10 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:moghtarib/core/utils/app_colors.dart';
-import 'package:moghtarib/core/widgets/default_text_field.dart';
-
 import 'package:moghtarib/features/auth/cubit/register_cubit/register_cubit.dart';
 import 'package:moghtarib/features/auth/cubit/register_cubit/register_state.dart';
-
 import 'package:moghtarib/core/routes/app_routes.dart';
 
-
-import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 class DefaultTextField extends StatelessWidget {
   final TextEditingController controller;
   final String hintText;
@@ -52,7 +45,7 @@ class RegisterView extends StatelessWidget {
       child: BlocConsumer<RegisterCubit, RegisterStates>(
         listener: (context, state) {
           if (state is RegisterSuccessState) {
-            // 1. إظهار رسالة النجاح
+          
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(
                 content: Text('Account Created Successfully'), 
@@ -60,7 +53,6 @@ class RegisterView extends StatelessWidget {
               ),
             );
 
-            // 2. التوجيه الآمن بناءً على الـ Role المختار من الـ Cubit ومسح الـ Stack
             final cubit = RegisterCubit.get(context);
             final normalizedRole = (cubit.selectedRole ?? '').toLowerCase();
 
@@ -82,7 +74,6 @@ class RegisterView extends StatelessWidget {
                 nextRoute = AppRoutes.welcome;
             }
 
-            // التوجيه الفوري ومسح شاشات الـ Register والـ Login السابقة تماماً
             Navigator.pushNamedAndRemoveUntil(context, nextRoute, (route) => false);
           }
           
@@ -115,6 +106,10 @@ class RegisterView extends StatelessWidget {
                       TextFormField(
                         controller: _userNameController,
                         keyboardType: TextInputType.name,
+                        style: const TextStyle(
+                         color: Color.fromARGB(255, 38, 42, 44), 
+                          fontSize: 16,
+                           ),
                         decoration: _inputDecoration(hint: 'Enter user name', icon: Icons.person),
                       ),
                       const SizedBox(height: 16),
@@ -122,6 +117,10 @@ class RegisterView extends StatelessWidget {
                       TextFormField(
                         controller: _firstNameController,
                         keyboardType: TextInputType.name,
+                        style: const TextStyle(
+                         color: Color.fromARGB(255, 38, 42, 44), 
+                          fontSize: 16,
+                           ),
                         decoration: _inputDecoration(hint: 'Enter first Name', icon: Icons.person),
                       ),
                       const SizedBox(height: 16),
@@ -129,6 +128,10 @@ class RegisterView extends StatelessWidget {
                       TextFormField(
                         controller: _lastNameController,
                         keyboardType: TextInputType.name,
+                        style: const TextStyle(
+                         color: Color.fromARGB(255, 38, 42, 44), 
+                          fontSize: 16,
+                           ),
                         decoration: _inputDecoration(hint: 'Enter last Name', icon: Icons.person),
                       ),
                       const SizedBox(height: 16),
@@ -136,6 +139,10 @@ class RegisterView extends StatelessWidget {
                       TextFormField(
                         controller: _emailController,
                         keyboardType: TextInputType.emailAddress,
+                        style: const TextStyle(
+                         color: Color.fromARGB(255, 38, 42, 44), 
+                          fontSize: 16,
+                           ),
                         decoration: _inputDecoration(hint: 'Email', icon: Icons.email),
                       ),
                       const SizedBox(height: 16),
@@ -143,6 +150,10 @@ class RegisterView extends StatelessWidget {
                       TextFormField(
                         controller: _passwordController,
                         obscureText: cubit.isPasswordHidden,
+                        style: const TextStyle(
+                         color: Color.fromARGB(255, 38, 42, 44), 
+                          fontSize: 16,
+                           ),
                         decoration: _inputDecoration(
                           hint: 'Password',
                           icon: Icons.lock,
@@ -157,6 +168,10 @@ class RegisterView extends StatelessWidget {
                       TextFormField(
                         controller: _confirmPasswordController,
                         obscureText: cubit.isConfirmPasswordHidden,
+                        style: const TextStyle(
+                         color: Color.fromARGB(255, 38, 42, 44), 
+                          fontSize: 16,
+                           ),
                         decoration: _inputDecoration(
                           hint: 'Confirm Password',
                           icon: Icons.lock_outline,
@@ -168,14 +183,14 @@ class RegisterView extends StatelessWidget {
                       ),
                       const SizedBox(height: 16),
                       
-                      // DefaultTextField(
-                      //   controller: _nationalIdController,
-                      //   hintText: 'Enter National ID',
-                        
-                      // ),
+                      
                       TextFormField(
                         controller: _nationalIdController,
                         keyboardType: TextInputType.number,
+                        style: const TextStyle(
+                         color: Color.fromARGB(255, 38, 42, 44), 
+                          fontSize: 16,
+                           ),
                         decoration: _inputDecoration(hint: 'Enter National ID', icon: Icons.badge),
                       ),
                       const SizedBox(height: 16),
@@ -195,7 +210,7 @@ class RegisterView extends StatelessWidget {
                         items: ['Admin', 'Student', 'Sanaiee', 'Semsar'].map((String role) {
                           return DropdownMenuItem<String>(
                             value: role,
-                            child: Text(role, style: const TextStyle(color: Colors.black)),
+                            child: Text(role, style: const TextStyle(color: Color.fromARGB(255, 245, 241, 241))),
                           );
                         }).toList(),
                         onChanged: (String? newValue) {
@@ -215,6 +230,10 @@ class RegisterView extends StatelessWidget {
                       TextFormField(
                         controller: _phoneController,
                         keyboardType: TextInputType.phone,
+                        style: const TextStyle(
+                         color: Color.fromARGB(255, 38, 42, 44), 
+                          fontSize: 16,
+                           ),
                         decoration: _inputDecoration(hint: 'Enter Phone number', icon: Icons.phone),
                       ),
                       const SizedBox(height: 16),
@@ -222,6 +241,11 @@ class RegisterView extends StatelessWidget {
                       TextFormField(
                         controller: _whatsappController,
                         keyboardType: TextInputType.phone,
+                        style: const TextStyle(
+                         color: Color.fromARGB(255, 38, 42, 44), 
+
+                          fontSize: 16,
+                           ),
                         decoration: _inputDecoration(hint: 'Enter WhatsApp number', icon: Icons.phone),
                       ),
                       const SizedBox(height: 24),
