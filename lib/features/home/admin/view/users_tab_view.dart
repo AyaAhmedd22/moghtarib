@@ -193,15 +193,42 @@ class _UsersTabViewState extends State<UsersTabView> {
                               ],
                             ),
                           ),
+                          // IconButton(
+                          //   tooltip: 'Delete',
+                          //   onPressed: () {
+                          //     print("🚨🚨 BUTTON CLICKED! User Name: ${user.userName}, Core ID is: ${user.id}");
+                          //     // ✨ الحذف سيعمل بشكل ممتاز الآن ولن يرسل قيمة 0 مجدداً
+                          //     context.read<UsersCubit>().deleteUser(userId: id);
+                          //   },
+                          //   icon: const Icon(Icons.delete_forever, color: Colors.white),
+                          // ),
                           IconButton(
-                            tooltip: 'Delete',
-                            onPressed: () {
-                              print("🚨🚨 BUTTON CLICKED! User Name: ${user.userName}, Core ID is: ${user.id}");
-                              // ✨ الحذف سيعمل بشكل ممتاز الآن ولن يرسل قيمة 0 مجدداً
-                              context.read<UsersCubit>().deleteUser(userId: id);
-                            },
-                            icon: const Icon(Icons.delete_forever, color: Colors.white),
-                          ),
+  icon: const Icon(Icons.delete_forever, color: Colors.white),
+  onPressed: () {
+    // نستخدم Builder لضمان الوصول للـ Cubit
+    showDialog(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: const Text("Delete User"),
+        content: const Text("Are you sure you want to delete this user?"),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext),
+            child: const Text("Cancel"),
+          ),
+          TextButton(
+            onPressed: () {
+              // استدعاء الـ Cubit هنا
+              context.read<UsersCubit>().deleteUser(userId: user.id.toString());
+              Navigator.pop(dialogContext);
+            },
+            child: const Text("Delete", style: TextStyle(color: Colors.red)),
+          ),
+        ],
+      ),
+    );
+  },
+),
                         ],
                       ),
                     ),

@@ -8,7 +8,7 @@ class ReportCubit extends Cubit<ReportState> {
 
   List<ReportModel> reports = [];
 
-  void fetchReports() async {
+  Future <void> fetchReports() async {
     emit(GetReportsLoadingState());
     
     final result = await adminRepo.getAllReports();
@@ -19,6 +19,24 @@ class ReportCubit extends Cubit<ReportState> {
         reports = list;
         emit(GetReportsSuccessState(reports));
       },
+      
     );
+    
   }
+Future<void> deleteReport(String reportId) async {
+ 
+  final result = await adminRepo.deleteReport(reportId);
+  
+  result.fold(
+    (error) {
+     
+      emit(GetReportsErrorState(error));
+    },
+    (success) async {
+      
+      await fetchReports(); 
+    },
+  );
+}
+
 }

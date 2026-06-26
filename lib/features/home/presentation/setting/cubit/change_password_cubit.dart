@@ -1,7 +1,7 @@
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../profile_cubit/profile_state.dart';
-import '../repo/profile_repo.dart';
+import 'package:moghtarib/features/home/presentation/setting/cubit/change_password_state.dart';
+import 'package:moghtarib/features/home/presentation/setting/repo/change_password_repo.dart';
 
 class UserCubit extends Cubit<UserState> {
   final UserRepo userRepo;
@@ -9,13 +9,13 @@ class UserCubit extends Cubit<UserState> {
 
   static UserCubit get(context) => BlocProvider.of(context);
 
-  // تعريف الـ Controllers الثلاثة المطلوبة في الـ UI
+  
   var emailController = TextEditingController();
   var newPasswordController = TextEditingController();
   var confirmPasswordController = TextEditingController();
 
   void changePassword() async {
-    // 1. التحقق من المدخلات
+    
     if (emailController.text.isEmpty) {
       emit(ChangePasswordError("برجاء إدخال البريد الإلكتروني"));
       return;
@@ -33,9 +33,9 @@ class UserCubit extends Cubit<UserState> {
 
     emit(ChangePasswordLoading());
     
-    // 2. استدعاء الـ Repo وتمرير الإيميل والباسورد
+    
     final result = await userRepo.changePassword(
-      email: emailController.text, // الخطأ هنا هيختفي لأن الـ Repo بقا بيستقبله
+      email: emailController.text, 
       newPassword: newPasswordController.text,
     );
     

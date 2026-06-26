@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:moghtarib/features/home/presentation/profile/profile_cubit/profile_cubit.dart';
-import 'package:moghtarib/features/home/presentation/profile/repo/profile_repo.dart';
+import 'package:moghtarib/features/home/presentation/about/about_screen.dart';
 import 'package:moghtarib/features/home/presentation/profile/view/profile_view.dart';
+import 'package:moghtarib/features/home/presentation/setting/cubit/change_password_cubit.dart';
+import 'package:moghtarib/features/home/presentation/setting/repo/change_password_repo.dart';
+import 'package:moghtarib/features/home/presentation/setting/view/change_password_view.dart';
 import '../../../../core/cache/cache_helper.dart';
 import '../../../../core/cache/cache_keys.dart';
 import '../../../../core/utils/app_assets.dart';
 import '../../../../core/utils/app_colors.dart';
 import '../../../../core/routes/app_routes.dart';
-import '../about/about_screen.dart';
 class BaseHomeScreen extends StatelessWidget {
   final String drawerTitle;
   final VoidCallback? onLogout;
@@ -20,7 +21,6 @@ class BaseHomeScreen extends StatelessWidget {
     this.onLogout,
     required this.body,
   });
-
 
   @override
   Widget build(BuildContext context) {
@@ -37,127 +37,111 @@ class BaseHomeScreen extends StatelessWidget {
         ),
         iconTheme: const IconThemeData(color: Colors.white),
       ),
-      drawer: Drawer(
-        backgroundColor: AppColors.scaffoldBackground,
-        child: SafeArea(
-          child: ListView(
-            padding: EdgeInsets.zero,
-            children: [
-              DrawerHeader(
-                decoration: BoxDecoration(color: AppColors.scaffoldBackground),
-                child: Center(
-                  child: Image.asset(
-                    AppAssets.logo,
-                    width: 92,
-                    height: 92,
+      // الحل السحري: تغليف الـ Drawer بالـ BlocProvider ليكون متاحاً لجميع الشاشات الفرعية
+      drawer: BlocProvider(
+        create: (context) => UserCubit(UserRepo()),
+        child: Drawer(
+          backgroundColor: AppColors.scaffoldBackground,
+          child: SafeArea(
+            child: ListView(
+              padding: EdgeInsets.zero,
+              children: [
+                DrawerHeader(
+                  decoration: BoxDecoration(color: AppColors.scaffoldBackground),
+                  child: Center(
+                    child: Image.asset(
+                      AppAssets.logo,
+                      width: 92,
+                      height: 92,
+                    ),
                   ),
                 ),
-              ),
-              ListTile(
-                leading: const Icon(Icons.home, color: Colors.white),
-                title: const Text(
-                  'Home',
-                  style: TextStyle(color: Colors.white),
+                ListTile(
+                  leading: const Icon(Icons.home, color: Colors.white),
+                  title: const Text(
+                    'Home',
+                    style: TextStyle(color: Colors.white),
+                  ),
+                  onTap: () {
+                    Navigator.of(context).pop();
+                  },
                 ),
-                onTap: () {
-                  Navigator.of(context).pop();
-                },
-              ),
-              ListTile(
-                leading: const Icon(Icons.info_outline, color: Colors.white),
-                title: const Text(
-                  'About',
-                  style: TextStyle(color: Colors.white),
+                ListTile(
+                  leading: const Icon(Icons.info_outline, color: Colors.white),
+                  title: const Text(
+                    'About',
+                    style: TextStyle(color: Colors.white),
+                  ),
+                  onTap: () {
+                    Navigator.of(context).pop();
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (_) => AboutScreen(),
+                      ),
+                    );
+                  },
                 ),
-                onTap: () {
-                  Navigator.of(context).pop();
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (_) => AboutScreen(),
-                    ),
-                  );
-                },
-              ),
-              ListTile(
-                leading: const Icon(Icons.settings, color: Colors.white),
-                title: const Text(
-                  'Settings',
-                  style: TextStyle(color: Colors.white),
+                ListTile(
+                  leading: const Icon(Icons.settings, color: Colors.white),
+                  title: const Text(
+                    'Settings',
+                    style: TextStyle(color: Colors.white),
+                  ),
+                  onTap: () {
+                    Navigator.of(context).pop();
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (_) => const ChangePasswordScreen(),
+                      ),
+                    );
+                  },
                 ),
-                onTap: () {
-                  Navigator.of(context).pop();
-                  // Placeholder: light/dark mode + language toggles.
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (_) => const _EmptySettingsScreen(),
-                    ),
-                  );
-                },
-              ),
-              ListTile(
-                leading: const Icon(Icons.person, color: Colors.white),
-                title: const Text(
-                  'Profile',
-                  style: TextStyle(color: Colors.white),
+                ListTile(
+                  leading: const Icon(Icons.person, color: Colors.white),
+                  title: const Text(
+                    'Profile',
+                    style: TextStyle(color: Colors.white),
+                  ),
+                  onTap: () {
+                    Navigator.of(context).pop();
+                    // بما أن الـ Drawer مغلف بالـ Cubit، فالشاشة المفتوحة هنا ستجده في الـ Context تلقائياً
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (_) => ProfileView(), 
+                      ),
+                    );
+                  },
                 ),
-                onTap: () {
-                  Navigator.of(context).pop();
-                  // Placeholder: change password feature.
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (_) => BlocProvider(
-                  create: (context) => UserCubit(UserRepo()), // تأكد من باصي الـ apiHelper لو الـ Constructor مستنيه
-                 child: const ProfileScreen(),
-                  ),)
-                   );
-                },
-              ),
-              const Divider(color: Colors.white24),
-              // ListTile(
-              //   leading: const Icon(Icons.logout, color: Colors.white),
-              //   title: const Text(
-              //     'Logout',
-              //     style: TextStyle(color: Colors.white),
-              //   ),
-              //   onTap: () {
-              //     Navigator.of(context).pop();
-              //     onLogout?.call();
-              //   },
-              // ),
-              ListTile(
-  leading: const Icon(Icons.logout, color: Colors.white),
-  title: const Text(
-    'Logout',
-    style: TextStyle(color: Colors.white),
-  ),
-  onTap: () async {
-    // 1. غلق القائمة الجانبية (Drawer)
-    Navigator.of(context).pop();
+                const Divider(color: Colors.white24),
+                ListTile(
+                  leading: const Icon(Icons.logout, color: Colors.white),
+                  title: const Text(
+                    'Logout',
+                    style: TextStyle(color: Colors.white),
+                  ),
+                  onTap: () async {
+                    Navigator.of(context).pop();
 
-    // 2. مسح بيانات الجلسة من الكاش (عشان لما يفتح تاني يروح للـ Splash ومنها للـ Welcome)
-    // ملحوظة: تأكدي من عمل import لـ CacheHelper و CacheKeys في الملف ده لو مش معمولين.
-    await CacheHelper.setValue(key: CacheKeys.accessToken, value: null); // أو قيمة فارغة ''
-    await CacheHelper.setValue(key: CacheKeys.userRole, value: null);
+                    await CacheHelper.setValue(key: CacheKeys.accessToken, value: null);
+                    await CacheHelper.setValue(key: CacheKeys.userRole, value: null);
 
-    // 3. تشغيل الـ callback الإضافي لو مبعوت من بره
-    onLogout?.call();
+                    onLogout?.call();
 
-    // 4. توجيهه لصفحة الـ Welcome ومسح كل الصفحات القديمة من الـ Stack
-    if (context.mounted) {
-      Navigator.pushNamedAndRemoveUntil(
-        context,
-        AppRoutes.welcome, // اسم الراوت الخاص بصفحة let's start / welcome عندك
-        (route) => false,  // مسح كل الصفحات السابقة تماماً
-      );
-    }
-  },
-),
-            ],
+                    if (context.mounted) {
+                      Navigator.pushNamedAndRemoveUntil(
+                        context,
+                        AppRoutes.welcome,
+                        (route) => false,
+                      );
+                    }
+                  },
+                ),
+              ],
+            ),
           ),
         ),
       ),
       body: body,
-
     );
   }
 }

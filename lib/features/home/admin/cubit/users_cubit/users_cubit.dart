@@ -18,23 +18,54 @@ class UsersCubit extends Cubit<UsersState> {
     );
   }
 // 📢 غيّري int إلى String هنا في البارامتر:
+// Future<void> deleteUser({required String userId}) async {
+//   final current = state;
+//   if (current is! UsersLoaded) return;
+
+//   final List<UserModel> currentUsers = List.from(current.users);
+
+//   // تمرير الـ String userId بنجاح إلى الـ Repo بدون أخطاء
+//   final result = await _repo.deleteUser(userId: userId);
+
+//   result.fold(
+//     (error) => emit(UsersError(error)), // تأكدي من اسم الـ State عندك لو مختلف
+//     (success) {
+//       if (success) {
+//         // حذف المستخدم محلياً من القائمة بعد نجاح السيرفر
+//         currentUsers.removeWhere((user) => user.id == userId);
+//         emit(UsersLoaded(currentUsers));
+//       }
+//     },
+//   );
+// }
 Future<void> deleteUser({required String userId}) async {
+  // 1. التأكد من أن القائمة محملة حالياً قبل الحذف
   final current = state;
   if (current is! UsersLoaded) return;
 
+  // 2. إنشاء نسخة من القائمة الحالية لتعديلها
   final List<UserModel> currentUsers = List.from(current.users);
 
-  // تمرير الـ String userId بنجاح إلى الـ Repo بدون أخطاء
+  // 3. إرسال طلب الحذف للـ Repo
   final result = await _repo.deleteUser(userId: userId);
 
   result.fold(
-    (error) => emit(UsersError(error)), // تأكدي من اسم الـ State عندك لو مختلف
+    (error) {
+      // إظهار الخطأ في حال فشل الحذف من السيرفر
+      emit(UsersError(error));
+    },
     (success) {
       if (success) {
-        // حذف المستخدم محلياً من القائمة بعد نجاح السيرفر
-        currentUsers.removeWhere((user) => user.id == userId);
+        // 4. حذف المستخدم محلياً من القائمة (باستخدام toString للمقارنة الآمنة)
+        currentUsers.removeWhere((user) => user.id.toString() == userId.toString());
+        
+        // 5. إرسال الحالة الجديدة لتحديث الشاشة فوراً
         emit(UsersLoaded(currentUsers));
       }
     },
   );
-}}
+}
+
+
+
+}

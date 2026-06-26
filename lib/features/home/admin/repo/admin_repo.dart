@@ -1,5 +1,5 @@
 import 'package:dartz/dartz.dart';
-
+import 'package:moghtarib/features/home/admin/model/department_model.dart';
 import '../../../../core/network/api_helper.dart';
 import '../../../../core/network/end_points.dart';
 import '../../../../core/cache/cache_helper.dart';
@@ -9,7 +9,6 @@ import 'package:url_launcher/url_launcher.dart';
 import '../model/report_model.dart';
 class AdminRepo {
   
-  // 1️⃣ دالة جلب جميع المستخدمين (شغالة وسليمة تماماً)
   Future<Either<String, List<UserModel>>> getAllUsers({String? searchText}) async {
     final hasSearch = searchText != null && searchText.trim().isNotEmpty;
 
@@ -43,22 +42,14 @@ class AdminRepo {
     });
   }
 
-  // 2️⃣ دالة حذف المستخدم (تم تقفيلها وحل مشكلة الـ Syntax والـ Return)
-  Future<Either<String, bool>> deleteUser({required String userId}) async {
-    // رجعناها لـ delete الصحيحة مع الـ Id الكابيتال المتوافق مع الـ Swagger
-    final result = await ApiHelper.delete(
-      endPoint: '${EndPoints.deleteUser}?Id=$userId',
-      isProtected: false,
-    );
+Future<Either<String, bool>> deleteUser({required String userId}) async {
+  final result = await ApiHelper.delete(
+    endPoint: '${EndPoints.deleteUser}?id=$userId', 
+    isProtected: true,
+  );
 
-    return result.map((responseBody) {
-      if (responseBody is Map<String, dynamic>) {
-        final dynamic successRaw = responseBody['success'] ?? responseBody['Success'];
-        if (successRaw is bool) return successRaw;
-      }
-      return true; // إرجاع افتراضي في حال نجاح الطلب ولم يحتوي الـ Body على كائن معقد
-    });
-  }
+  return result.map((responseBody) => true);
+}
   //sanaiee
  Future<Either<String, List<SanaieeModel>>> getAllSanaieeia({String? searchText}) async {
     final hasSearch = searchText != null && searchText.trim().isNotEmpty;
@@ -70,6 +61,7 @@ class AdminRepo {
     );
 
     return result.map((responseBody) {
+      print("DEBUG JSON: $responseBody");
       if (responseBody is List) {
         return responseBody.map((e) => SanaieeModel.fromJson(e as Map<String, dynamic>)).toList();
       }
@@ -93,8 +85,7 @@ class AdminRepo {
     });
   }
   Future<void> openWhatsApp(String phoneNumber) async {
-    // كود مخصص لتهيئة الرقم بالشكل الذي يقبله الواتساب الدولي (بدون + أو أصفار إضافية في البداية)
-    // إذا كان الرقم مصرياً مثلاً يبدأ بـ 010، يجب أن يصبح 2010
+    
     String formattedPhone = phoneNumber;
     if (phoneNumber.startsWith('0')) {
       formattedPhone = '20${phoneNumber.substring(1)}';
@@ -113,32 +104,22 @@ class AdminRepo {
     }
   }
 
-  // 2️⃣ دالة حذف المستخدم (تم تقفيلها وحل مشكلة الـ Syntax والـ Return)
-  
-// Future<Either<String, List<ReportModel>>> getAllReports() async {
-//   // جلب الـ ID بالطريقة الصحيحة للدالة الخاصة بك
-//   final String adminId = CacheHelper.getValue('userId')?.toString() ?? "0";
+Future<Either<String, bool>> deleteReport(String reportId) async {
 
-//   final result = await ApiHelper.get(
-//     endPoint: EndPoints.getAllReports, 
-//     isProtected: true,
-//     queryParameters: {
-//       'userId': adminId, 
-//     },
-//   );
+  final result = await ApiHelper.delete(
+    endPoint: '${EndPoints.deleteReport}?reportId=$reportId', 
+    isProtected: true,
+  );
 
-//   return result.map((responseBody) {
-//     if (responseBody is List) {
-//       return responseBody.map((e) => ReportModel.fromJson(e as Map<String, dynamic>)).toList();
-//     }
+  return result.map((responseBody) {
+    return true; 
+  });
+}
 Future<Either<String, List<ReportModel>>> getAllReports() async {
   
-  // 1. جلب الـ ID الذي حفظناه أثناء الـ Login
- // في ملف admin_repo.dart
-// استبدلي السطر 136 بهذا السطر:
+
 final String adminId = CacheHelper.getValue('userId')?.toString() ?? "";
 
-  // 2. إرسال الطلب مع الـ userId
   final result = await ApiHelper.get(
     endPoint: EndPoints.getAllReports,
     isProtected: true,
@@ -146,19 +127,19 @@ final String adminId = CacheHelper.getValue('userId')?.toString() ?? "";
       'Accept': 'application/json',
       'Content-Type': 'application/json',
     },
-    // إرسال الـ userId الذي يطلبه السيرفر
+
     queryParameters: {
       'userId': adminId ?? "", 
     },
   );
 
   return result.map((responseBody) {
-    // معالجة البيانات كما كانت
+   
     if (responseBody is List) {
       return responseBody.map((e) => ReportModel.fromJson(e as Map<String, dynamic>)).toList();
     }
     
-    // في حال كانت البيانات مغلفة داخل مفتاح (مثل "data" أو "result")
+    
     if (responseBody is Map<String, dynamic>) {
        final dynamic data = responseBody['data'] ?? responseBody['result'] ?? responseBody;
        if (data is List) {
@@ -169,4 +150,48 @@ final String adminId = CacheHelper.getValue('userId')?.toString() ?? "";
     return <ReportModel>[];
   });
 }
+
+
+Future<Either<String, bool>> addDepartment(String deptName) async {
+  final result = await ApiHelper.post(
+    endPoint: EndPoints.postDepartment, 
+    data: DepartmentModel(name: deptName).toJson(),
+    isProtected: true,
+  );
+  return result.fold(
+    (error) => Left(error),
+    (response) => const Right(true),
+  );
+}
+// 1. دالة جلب الأقسام (GET)
+Future<Either<String, List<DepartmentModel>>> getDepartments() async {
+  final result = await ApiHelper.get(
+    endPoint: EndPoints.getDepartments, // تأكدي من إضافة هذا الـ endpoint في ملف EndPoints
+    isProtected: true,
+  );
+
+  return result.fold(
+    (error) => Left(error),
+    (response) {
+      // تحويل القائمة القادمة من الـ API إلى قائمة من نوع DepartmentModel
+      List<dynamic> data = response;
+      List<DepartmentModel> departments = data.map((item) => DepartmentModel.fromJson(item)).toList();
+      return Right(departments);
+    },
+  );
+}
+
+// 2. دالة حذف قسم (DELETE)
+Future<Either<String, bool>> deleteDepartment(int id) async {
+  final result = await ApiHelper.delete(
+    endPoint: "${EndPoints.deleteDepartment}/$id", // إرسال الـ ID في المسار
+    isProtected: true,
+  );
+
+  return result.fold(
+    (error) => Left(error),
+    (response) => const Right(true),
+  );
+}
+
 }

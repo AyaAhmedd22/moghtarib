@@ -3,8 +3,8 @@ class AllApartmentModel {
   String? city;
   String? village;
   String? location;
-  double? addressLat; // تم تغييرها إلى double لأن الإحداثيات دائماً عشرية
-  double? addressLon; // تم تغييرها إلى double لأن الإحداثيات دائماً عشرية
+  double? addressLat; 
+  double? addressLon; 
   int? price;
   int? numOfRooms;
   String? baseImageURL;
@@ -44,12 +44,9 @@ class AllApartmentModel {
     city = json['city'];
     village = json['village'];
     location = json['location'];
-    
-    // تحويل آمن للإحداثيات العشرية (double) حتى لو جاءت من السيرفر كـ int
     addressLat = (json['address_Lat'] as num?)?.toDouble();
     addressLon = (json['address_Lon'] as num?)?.toDouble();
-    
-    // تحويل آمن للأرقام لضمان عدم حدوث تضارب بين int و double
+  
     price = (json['price'] as num?)?.toInt();
     numOfRooms = (json['numOfRooms'] as num?)?.toInt();
     type = (json['type'] as num?)?.toInt();
@@ -58,12 +55,11 @@ class AllApartmentModel {
     baseImageURL = json['baseImageURL'];
     isRent = json['isRent'];
     dateOfCreation = json['dateOfCreation'];
-    userId = json['userId']?.toString(); // تحويل آمن لـ String لو الـ id جاء رقم
+    userId = json['userId']?.toString();
     userName = json['userName'];
     userPhone = json['userPhone'];
     userWhatsapp = json['userWhatsapp'];
-    
-    // حماية قائمة الصور من الـ null والـ casting الخاطئ
+  
     if (json['imagesURL'] != null) {
       imagesURL = List<String>.from(json['imagesURL'].map((x) => x.toString()));
     } else {

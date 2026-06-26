@@ -1,16 +1,11 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:moghtarib/features/screen/welcome.dart';
-import '../../core/utils/app_assets.dart';
 import '../../core/utils/app_colors.dart';
 import '../../core/cache/cache_helper.dart';
 import '../../core/cache/cache_keys.dart';
 import '../../core/routes/app_routes.dart';
 import '../../core/utils/jwt_role_parser.dart';
-
-
-
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -32,7 +27,6 @@ class _SplashScreenState extends State<SplashScreen> {
         return;
       }
 
-      // Prefer saved role first (fast + avoids API call).
       final savedRole = CacheHelper.getValue(CacheKeys.userRole) as String?;
       if (savedRole != null && savedRole.isNotEmpty) {
         final role = savedRole.toLowerCase();
@@ -55,8 +49,6 @@ class _SplashScreenState extends State<SplashScreen> {
         }
       }
 
-      // Fallback: decode role from the stored JWT token.
-      // (Avoid calling /UserRoles to prevent backend 400 errors.)
       final role = JwtRoleParser.extractRole(token);
       if (role == null || role.isEmpty) {
         Navigator.pushReplacementNamed(context, AppRoutes.welcome);

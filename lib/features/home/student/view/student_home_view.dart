@@ -1,3 +1,4 @@
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../core/utils/app_colors.dart';
@@ -7,35 +8,35 @@ import '../repo/student_repo.dart';
 import '../../admin/view/sanaiee_tab_view.dart';
 import '../../admin/repo/admin_repo.dart';
 import '../cubit/all_apartment_cubit/all_apartment_cubit.dart';
-import '../repo/student_repo.dart';
 import '../view/all_apartment_tab_view.dart';
+import '../view/add_report_tab_view.dart';
+import 'my_report_tab_view.dart';
+import '../cubit/my_report_cubit/my_report_cubit.dart';
 
 class StudentHomeView extends StatelessWidget {
   const StudentHomeView({super.key});
 
   @override
   Widget build(BuildContext context) {
-    // إنشاء نسخة واحدة من الـ AdminRepo ليتشاركها الـ Cubits بدلاً من إنشاء نسختين منفصلتين
     final studentRepo = StudentRepo();
     final adminRepo = AdminRepo();
+    
     return MultiBlocProvider(
       providers: [
-         BlocProvider<AllApartmentCubit>(
-          // هنا نقوم بحقن الـ SanaieeCubit واستدعاء fetchSanaiee() مباشرة لتبدأ البيانات بالتحميل فوراً
+        BlocProvider<AllApartmentCubit>(
           create: (_) => AllApartmentCubit(studentRepo)..fetchAllApartment(),
         ),
         BlocProvider<SanaieeCubit>(
-          // هنا نقوم بحقن الـ SanaieeCubit واستدعاء fetchSanaiee() مباشرة لتبدأ البيانات بالتحميل فوراً
-          create: (_) => SanaieeCubit(adminRepo)..fetchSanaiee(), 
+          create: (_) => SanaieeCubit(adminRepo)..fetchSanaiee(),
         ),
-      
-        //  BlocProvider<FavouriteCubit>(
-        //   // هنا نقوم بحقن الـ SanaieeCubit واستدعاء fetchSanaiee() مباشرة لتبدأ البيانات بالتحميل فوراً
-        //   create: (_) => SanaieeCubit(StudentRepo)..fetchSanaiee(), 
-        // ),
+        
+       BlocProvider(
+        create: (context) => MyReportsCubit(studentRepo)..fetchMyReports(),
+         child: const MyReportTabView(),
+        )
       ],
       child: DefaultTabController(
-        length: 2,
+        length: 4, 
         child: BaseHomeScreen(
           drawerTitle: 'Student',
           onLogout: null,
@@ -44,14 +45,25 @@ class StudentHomeView extends StatelessWidget {
               Material(
                 color: AppColors.scaffoldBackground,
                 child: TabBar(
+                  isScrollable: true, 
+                  tabAlignment: TabAlignment.start,
                   labelColor: Colors.white,
                   unselectedLabelColor: Colors.white.withOpacity(0.7),
                   indicatorColor: Colors.white,
+                  indicatorWeight: 3,
+                 
+                  labelStyle: const TextStyle(
+                    fontSize: 18, 
+                    fontWeight: FontWeight.bold,
+                  ),
+                  unselectedLabelStyle: const TextStyle(
+                    fontSize: 16,
+                  ),
                   tabs: const [
-                   Tab(text: 'Apartment'),
+                    Tab(text: 'Apartment'),
                     Tab(text: 'Sanaiee'),
-                    
-                    // Tab(text: 'Favourite'),
+                    Tab(text: 'Add Report'),
+                    Tab(text: 'My Report'),
                   ],
                 ),
               ),
@@ -59,8 +71,9 @@ class StudentHomeView extends StatelessWidget {
                 child: TabBarView(
                   children: [
                     ApartmentTabView(),
-                    SanaieeTabView(), // 💡 الآن ستجد الـ Cubit الخاص بها وتعمل بسلام دون شاشة حمراء
-                    // FavouriteTabView(),
+                    SanaieeTabView(),
+                    AddReportTabView(),
+                    MyReportTabView(),
                   ],
                 ),
               ),
