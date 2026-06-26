@@ -7,6 +7,7 @@ import 'package:moghtarib/features/screen/splash.dart';
 import 'package:moghtarib/features/screen/welcome.dart';
 import 'package:moghtarib/features/home/home_screens.dart';
 import 'package:moghtarib/core/routes/app_routes.dart';
+import 'package:get/get_navigation/src/root/get_material_app.dart';
 void main() async{
   WidgetsFlutterBinding.ensureInitialized();
   await CacheHelper.init();
@@ -25,7 +26,7 @@ class MyApp extends StatelessWidget {
       splitScreenMode: true, 
       builder: (context, child) {
      
-          return MaterialApp(
+          return GetMaterialApp(
           title: 'Moghtarib',
           debugShowCheckedModeBanner: false,
           theme: ThemeData(
